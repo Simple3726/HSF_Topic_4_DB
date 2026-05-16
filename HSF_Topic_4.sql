@@ -301,7 +301,8 @@ CREATE TABLE scores (
 
     judge_id UNIQUEIDENTIFIER NOT NULL,
 
-    criterion_id UNIQUEIDENTIFIER NOT NULL,
+    -- SỬA Ở ĐÂY: Đổi kiểu dữ liệu từ UNIQUEIDENTIFIER sang INT cho khớp với EventCriteria
+    criterion_id INT NOT NULL, 
 
     score FLOAT,
 
@@ -313,7 +314,8 @@ CREATE TABLE scores (
 
     FOREIGN KEY (judge_id) REFERENCES users(id),
 
-    FOREIGN KEY (criterion_id) REFERENCES event_criteria(id)
+    -- SỬA Ở ĐÂY: Tham chiếu đúng tên bảng EventCriteria và cột EventCriterionID
+    FOREIGN KEY (criterion_id) REFERENCES EventCriteria(EventCriterionID)
 );
 
 
