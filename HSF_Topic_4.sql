@@ -200,7 +200,6 @@ CREATE TABLE team_members (
 );
 
 
-
 -- =====================================================
 -- FUNCTION 4: SCORING CRITERIA MANAGEMENT
 -- =====================================================
@@ -208,33 +207,32 @@ CREATE TABLE team_members (
 -- TABLE: criteria_templates
 -- Purpose:
 -- Store reusable scoring templates
-CREATE TABLE CriteriaTemplate (
+CREATE TABLE CriterionTemplate (
     TemplateID    INT           IDENTITY(1,1) PRIMARY KEY,
-    CriteriaName NVARCHAR(200) NOT NULL,
+    CriterionName NVARCHAR(200) NOT NULL,    -- Đã sửa CriteriaName thành CriterionName
     Description   NVARCHAR(MAX) NULL,
     DefaultWeight DECIMAL(5,2)  NOT NULL DEFAULT 1.00,
     MaxScore      DECIMAL(6,2)  NOT NULL DEFAULT 10.00,
     IsActive      BIT           NOT NULL DEFAULT 1,
-    CreatedByID   UNIQUEIDENTIFIER           NOT NULL REFERENCES Users(id),
+    CreatedByID   UNIQUEIDENTIFIER NOT NULL REFERENCES users(id),
     CreatedAt     DATETIME2     NOT NULL DEFAULT GETUTCDATE()
 );
 GO
-
 
 -- TABLE: event_criteria
 -- Purpose:
 -- Store scoring criteria for event
 CREATE TABLE EventCriteria (
     EventCriterionID INT           IDENTITY(1,1) PRIMARY KEY,
-    EventID          UNIQUEIDENTIFIER           NOT NULL REFERENCES Events(id),
-    TemplateID       INT           NULL REFERENCES CriteriaTemplate(TemplateID),  -- NULL = custom for this event
-    CriteriaName    NVARCHAR(200) NOT NULL,
+    EventID          UNIQUEIDENTIFIER NOT NULL REFERENCES events(id),
+    TemplateID       INT           NULL REFERENCES CriterionTemplate(TemplateID),  -- Cập nhật tên bảng tham chiếu
+    CriterionName    NVARCHAR(200) NOT NULL,    -- Đã sửa CriteriaName thành CriterionName
     Description      NVARCHAR(MAX) NULL,
     Weight           DECIMAL(5,2)  NOT NULL DEFAULT 1.00,
     MaxScore         DECIMAL(6,2)  NOT NULL DEFAULT 10.00,
     SortOrder        TINYINT       NOT NULL DEFAULT 0,
     IsActive         BIT           NOT NULL DEFAULT 1,
-    CONSTRAINT UQ_EventCriteria_Event_Name UNIQUE (EventID, CriteriaName)
+    CONSTRAINT UQ_EventCriteria_Event_Name UNIQUE (EventID, CriterionName)
 );
 GO
 
