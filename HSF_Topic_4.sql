@@ -3,6 +3,16 @@
 -- SQL SERVER VERSION
 -- Simplified schema for student project
 -- =====================================================
+USE master;
+GO
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'SEAL_HackathonDB')
+    DROP DATABASE SEAL_HackathonDB;
+GO
+CREATE DATABASE SEAL_HackathonDB
+    COLLATE Vietnamese_CI_AS;
+GO
+USE SEAL_HackathonDB;
+GO
 
 
 
@@ -337,7 +347,43 @@ CREATE TABLE rankings (
     FOREIGN KEY (team_id) REFERENCES teams(id)
 );
 
+-- =====================================================
+-- TABLE: evaluation_audit_logs
+-- Purpose:
+-- Store audit logs for all scoring modifications and team/submission eliminations
+-- Fully conforms to the system's strict architectural standards
+-- =====================================================
 
+CREATE TABLE evaluation_audit_logs (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+
+    event_id UNIQUEIDENTIFIER NOT NULL,
+    -- To quickly filter logs per hackathon event
+
+    action_type NVARCHAR(50) NOT NULL,
+
+    actor_id UNIQUEIDENTIFIER NOT NULL,
+
+    -- Contextual Foreign Keys (Nullable depending on the action type)
+    score_id UNIQUEIDENTIFIER NULL,
+    team_id UNIQUEIDENTIFIER NULL,
+    submission_id UNIQUEIDENTIFIER NULL,
+
+    old_value NVARCHAR(MAX),
+
+    new_value NVARCHAR(MAX),
+
+    reason NVARCHAR(MAX) NOT NULL,
+    -- Mandatory justification for the modification or elimination
+
+    created_at DATETIME DEFAULT GETDATE(),
+
+    FOREIGN KEY (event_id) REFERENCES events(id),
+    FOREIGN KEY (actor_id) REFERENCES users(id),
+    FOREIGN KEY (score_id) REFERENCES scores(id),
+    FOREIGN KEY (team_id) REFERENCES teams(id),
+    FOREIGN KEY (submission_id) REFERENCES submissions(id)
+);
 
 -- =====================================================
 -- FUNCTION 7: REPORTING & AWARD MANAGEMENT
