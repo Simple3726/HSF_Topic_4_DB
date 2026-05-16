@@ -53,7 +53,7 @@ CREATE TABLE users (
 -- TABLE: events
 -- Purpose:
 -- Store hackathon events
-CREATE TABLE events (
+CREATE TABLE EVENTS (
     id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
 
     name NVARCHAR(255) NOT NULL,
@@ -208,41 +208,35 @@ CREATE TABLE team_members (
 -- TABLE: criteria_templates
 -- Purpose:
 -- Store reusable scoring templates
-CREATE TABLE criteria_templates (
-    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-
-    name NVARCHAR(255),
-
-    description NVARCHAR(MAX),
-
-    created_by UNIQUEIDENTIFIER,
-
-    created_at DATETIME DEFAULT GETDATE(),
-
-    FOREIGN KEY (created_by) REFERENCES users(id)
+CREATE TABLE CriteriaTemplate (
+    TemplateID    INT           IDENTITY(1,1) PRIMARY KEY,
+    CriteriaName NVARCHAR(200) NOT NULL,
+    Description   NVARCHAR(MAX) NULL,
+    DefaultWeight DECIMAL(5,2)  NOT NULL DEFAULT 1.00,
+    MaxScore      DECIMAL(6,2)  NOT NULL DEFAULT 10.00,
+    IsActive      BIT           NOT NULL DEFAULT 1,
+    CreatedByID   UNIQUEIDENTIFIER           NOT NULL REFERENCES Users(id),
+    CreatedAt     DATETIME2     NOT NULL DEFAULT GETUTCDATE()
 );
+GO
 
 
 -- TABLE: event_criteria
 -- Purpose:
 -- Store scoring criteria for event
-CREATE TABLE event_criteria (
-    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-
-    event_id UNIQUEIDENTIFIER NOT NULL,
-
-    template_id UNIQUEIDENTIFIER,
-
-    criterion_name NVARCHAR(255),
-
-    weight FLOAT,
-
-    created_at DATETIME DEFAULT GETDATE(),
-
-    FOREIGN KEY (event_id) REFERENCES events(id),
-
-    FOREIGN KEY (template_id) REFERENCES criteria_templates(id)
+CREATE TABLE EventCriteria (
+    EventCriterionID INT           IDENTITY(1,1) PRIMARY KEY,
+    EventID          UNIQUEIDENTIFIER           NOT NULL REFERENCES Events(id),
+    TemplateID       INT           NULL REFERENCES CriteriaTemplate(TemplateID),  -- NULL = custom for this event
+    CriteriaName    NVARCHAR(200) NOT NULL,
+    Description      NVARCHAR(MAX) NULL,
+    Weight           DECIMAL(5,2)  NOT NULL DEFAULT 1.00,
+    MaxScore         DECIMAL(6,2)  NOT NULL DEFAULT 10.00,
+    SortOrder        TINYINT       NOT NULL DEFAULT 0,
+    IsActive         BIT           NOT NULL DEFAULT 1,
+    CONSTRAINT UQ_EventCriteria_Event_Name UNIQUE (EventID, CriteriaName)
 );
+GO
 
 
 
