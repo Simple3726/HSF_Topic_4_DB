@@ -426,3 +426,23 @@ CREATE TABLE awards (
 
     FOREIGN KEY (team_id) REFERENCES teams(id)
 );
+CREATE TABLE award_types (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    title NVARCHAR(255) NOT NULL UNIQUE, 
+    description NVARCHAR(MAX),
+    default_prize_pool NVARCHAR(255), 
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+ALTER TABLE awards
+ADD award_type_id UNIQUEIDENTIFIER NOT NULL;
+
+ALTER TABLE awards
+ADD CONSTRAINT FK_awards_award_types 
+FOREIGN KEY (award_type_id) REFERENCES award_types(id);
+
+ALTER TABLE awards
+ALTER COLUMN announced_at DATETIME2;
+
+ALTER TABLE awards
+DROP COLUMN title;
